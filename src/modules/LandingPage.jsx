@@ -313,11 +313,11 @@ export default function LandingPage() {
               gap: '10px',
               padding: '6px 16px',
               borderRadius: 'var(--radius-full)',
-              backgroundColor: mix.badgeBg,
-              border: `1px solid ${mix.badgeBorder}`,
-              color: mix.badgeText,
+              backgroundColor: theme === 'light' ? '#e0e7ff' : mix.badgeBg,
+              border: `1px solid ${theme === 'light' ? '#c7d2fe' : mix.badgeBorder}`,
+              color: theme === 'light' ? '#3730a3' : mix.badgeText,
               fontSize: '12px',
-              fontWeight: 700,
+              fontWeight: 800,
               fontFamily: 'var(--font-mono)'
             }}>
               <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: mix.primary, boxShadow: `0 0 10px ${mix.primary}` }} />
@@ -329,19 +329,28 @@ export default function LandingPage() {
               fontWeight: 900, 
               lineHeight: '1.15',
               letterSpacing: '-0.03em',
-              marginBottom: '24px' 
+              marginBottom: '24px',
+              color: 'var(--text-primary)'
             }}>
               The Operating System for{' '}
               <span style={{
                 background: mix.heroGradient,
                 WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent'
+                WebkitTextFillColor: 'transparent',
+                color: mix.primary
               }}>
                 High-Velocity Teams.
               </span>
             </h1>
 
-            <p style={{ fontSize: '18px', color: 'var(--text-secondary)', lineHeight: '1.6', marginBottom: '36px', maxWidth: '540px' }}>
+            <p style={{ 
+              fontSize: '18px', 
+              color: theme === 'light' ? '#1e293b' : 'var(--text-secondary)', 
+              lineHeight: '1.6', 
+              marginBottom: '36px', 
+              maxWidth: '540px',
+              fontWeight: 500
+            }}>
               Consolidating Slack, Zoom, Notion, Linear, Loom, and ChatGPT into one high-performance, AI-native environment.
             </p>
 
@@ -355,7 +364,7 @@ export default function LandingPage() {
                   boxShadow: mix.glowShadow,
                   padding: '16px 32px', 
                   fontSize: '15px',
-                  fontWeight: 700,
+                  fontWeight: 800,
                   borderRadius: 'var(--radius-md)',
                   border: 'none',
                   cursor: 'pointer',

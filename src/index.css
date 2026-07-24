@@ -107,28 +107,28 @@
   --shadow-card-hover: 0 30px 80px rgba(112, 0, 255, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
-/* Stripe / Vercel Platinum White Light Theme */
+/* Executive Platinum Slate Light Theme (High Contrast & Rich Typography) */
 [data-theme="light"] {
   --bg-app: #f8fafc;
   --bg-surface: #ffffff;
   --bg-surface-hover: #f1f5f9;
   --bg-elevated: #ffffff;
   --bg-card: #ffffff;
-  --bg-input: #f1f5f9;
-  --border-color: rgba(15, 23, 42, 0.12);
-  --border-color-strong: rgba(99, 102, 241, 0.3);
-  --border-color-subtle: rgba(15, 23, 42, 0.06);
+  --bg-input: #ffffff;
+  --border-color: rgba(15, 23, 42, 0.14);
+  --border-color-strong: rgba(79, 70, 229, 0.4);
+  --border-color-subtle: rgba(15, 23, 42, 0.08);
   --text-primary: #0f172a;
-  --text-secondary: #334155;
-  --text-muted: #64748b;
-  --glass-bg: rgba(255, 255, 255, 0.96);
-  --glass-border: rgba(15, 23, 42, 0.12);
+  --text-secondary: #1e293b;
+  --text-muted: #475569;
+  --glass-bg: rgba(255, 255, 255, 0.95);
+  --glass-border: rgba(15, 23, 42, 0.14);
   --sidebar-bg: #ffffff;
   --header-bg: #ffffff;
   --code-bg: #0f172a;
-  --chart-grid: rgba(15, 23, 42, 0.06);
+  --chart-grid: rgba(15, 23, 42, 0.08);
   --shadow-glass: 0 10px 30px rgba(15, 23, 42, 0.06), 0 1px 3px rgba(15, 23, 42, 0.04);
-  --shadow-card-hover: 0 20px 48px rgba(99, 102, 241, 0.14), 0 4px 12px rgba(15, 23, 42, 0.06);
+  --shadow-card-hover: 0 20px 48px rgba(79, 70, 229, 0.16), 0 4px 12px rgba(15, 23, 42, 0.06);
 }
 
 * {
