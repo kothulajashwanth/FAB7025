@@ -31,60 +31,18 @@ import {
   Image as ImageIcon
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
+import { generateGeminiText, processNaturalAIQuery } from '../services/geminiService';
 
 // ----------------------------------------------------
 // Context-Aware Natural Conversational AI Engine
 // ----------------------------------------------------
-function generateNaturalAIResponse(prompt, history, file, modelName) {
-  const text = (prompt || '').trim();
-  const lower = text.toLowerCase();
-
-  // 1. Scan History for User Details (e.g., "My name is John")
-  let rememberedName = null;
-  history.forEach(msg => {
-    if (msg.sender === 'user') {
-      const match = msg.text.match(/(?:my name is|i am|call me)\s+([A-Za-z]+)/i);
-      if (match) rememberedName = match[1];
-    }
-  });
-
-  const userNameLabel = rememberedName || '';
-
-  // 2. Greetings & Salutations Handling ("hi", "hello", "hey", "good morning")
-  const greetings = ['hi', 'hello', 'hey', 'greetings', 'good morning', 'good afternoon', 'good evening', 'howdy', 'sup'];
-  if (greetings.some(g => lower === g || lower === `${g}!` || lower.startsWith(`${g} `) || lower.startsWith(`${g},`))) {
-    if (rememberedName) {
-      return `Hello ${rememberedName}! 👋 How can I help you today? Ask me any question, request code generation, document analysis, or project guidance!`;
-    }
-    return `Hello! 👋 How can I assist you today? Feel free to ask any question, request code implementation, analyze files, or plan tasks!`;
-  }
-
-  // 3. Name Memory Recall ("What is my name?")
-  if (lower.includes('what is my name') || lower.includes("what's my name") || lower.includes('who am i') || lower.includes('do you know my name')) {
-    if (rememberedName) {
-      return `Your name is **${rememberedName}**! You mentioned it to me earlier in our conversation. How can I help you, ${rememberedName}?`;
-    }
-    return `You haven't shared your name with me yet! What would you like me to call you?`;
-  }
-
-  // 4. File & Document Upload Analysis
+function generateNaturalAIResponse(prompt, history, file, modelName, userNameLabel = 'User') {
   if (file) {
     const preview = typeof file.content === 'string' ? file.content.slice(0, 350) : 'Document content stream.';
     return `### 📄 File Analysis (${file.name})\n\n**File Details**: ${file.size} • ${file.type || 'Document'}\n\n**Content Preview**:\n> "${preview}..."\n\n### 🔑 Key Takeaways:\n1. **Extraction**: File parsed cleanly with zero errors.\n2. **Vector Indexing**: Content indexed into workspace semantic memory.\n3. **Usage**: Ask any follow-up question to analyze specific sections of this document!`;
   }
 
-  // 5. Coding & Technical Queries
-  if (lower.includes('code') || lower.includes('function') || lower.includes('react') || lower.includes('javascript') || lower.includes('python') || lower.includes('css') || lower.includes('html') || lower.includes('api') || lower.includes('sql') || lower.includes('component') || lower.includes('hook') || lower.includes('debug')) {
-    return `### 💻 Code Implementation (${modelName})\n\nHere is the implementation for your request:\n\n\`\`\`javascript\n// Solution for: ${text}\nexport function useAIExecutionEngine(config = {}) {\n  const [isProcessing, setIsProcessing] = React.useState(false);\n  const [result, setResult] = React.useState(null);\n\n  const executePrompt = React.useCallback(async (userPrompt, history = []) => {\n    setIsProcessing(true);\n    try {\n      const response = await fetch('/api/ai/completion', {\n        method: 'POST',\n        headers: { 'Content-Type': 'application/json' },\n        body: JSON.stringify({ prompt: userPrompt, history, model: '${modelName}' })\n      });\n      const data = await response.json();\n      setResult(data.reply);\n      return data.reply;\n    } catch (err) {\n      console.error("AI Error:", err);\n    } finally {\n      setIsProcessing(false);\n    }\n  }, []);\n\n  return { executePrompt, isProcessing, result };\n}\n\`\`\`\n\n### 💡 Key Features:\n- **Non-blocking Execution**: Streamlined async pipeline.\n- **Production Quality**: Built with clean ES6 modular standards.`;
-  }
-
-  // 6. Mathematical & Analytical Queries
-  if (lower.includes('calculate') || lower.includes('math') || lower.includes('formula') || lower.includes('solve') || lower.includes('sum') || lower.includes('%') || lower.includes('*')) {
-    return `### 📐 Calculation & Reasoning\n\n**Query**: ${text}\n\n### Calculation Breakdown:\n1. Applied formula to input values.\n2. Evaluated with 100% precision.\n3. **Result**: Complete verified mathematical solution.\n\nLet me know if you would like me to perform further statistical calculations!`;
-  }
-
-  // 7. Natural General Q&A (No static "task" boilerplate)
-  return `Here is what you need to know regarding **"${text}"**:\n\n### Key Answer:\n${text} requires a structured approach. By breaking it down into clear execution steps, you can achieve optimal results.\n\n### 📌 Summary & Next Steps:\n1. **Review**: Evaluate your requirements and timeline.\n2. **Action**: Convert key points into workspace tasks or code modules.\n3. **Follow Up**: Feel free to ask follow-up questions anytime!`;
+  return processNaturalAIQuery(prompt, userNameLabel);
 }
 
 export default function AIAssistant() {
@@ -215,7 +173,7 @@ export default function AIAssistant() {
       );
     } catch (err) {
       console.warn("Gemini API fallback:", err);
-      fullResponse = generateNaturalAIResponse(currentQuery, updatedHistory, currentFile, selectedModel);
+      fullResponse = generateNaturalAIResponse(currentQuery, updatedHistory, currentFile, selectedModel, userName || 'User');
     }
 
     startStreamingResponse(fullResponse, currentQuery);
