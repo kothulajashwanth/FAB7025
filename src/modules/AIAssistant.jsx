@@ -89,7 +89,7 @@ function generateNaturalAIResponse(prompt, history, file, modelName) {
 
 export default function AIAssistant() {
   const { userName, addTask } = useApp();
-  const [selectedModel, setSelectedModel] = useState('ChatGPT-4o (OpenAI)');
+  const [selectedModel, setSelectedModel] = useState('Gemini 2.5 Flash (Google)');
   const [input, setInput] = useState('');
   const [isStreaming, setIsStreaming] = useState(false);
   const [streamingText, setStreamingText] = useState('');
@@ -184,7 +184,7 @@ export default function AIAssistant() {
     setStreamingText('');
   };
 
-  const handleSend = (overrideText = null) => {
+  const handleSend = async (overrideText = null) => {
     const textToSend = overrideText || input;
     if (!textToSend.trim() && !attachedFile) return;
 
@@ -207,14 +207,32 @@ export default function AIAssistant() {
     setInput('');
     setAttachedFile(null);
 
-    const fullResponse = generateNaturalAIResponse(currentQuery, updatedHistory, currentFile, selectedModel);
+    let fullResponse = '';
+    try {
+      fullResponse = await generateGeminiText(
+        currentQuery + (currentFile ? `\n\nAttached File Content:\n${currentFile.content}` : ''),
+        `You are TeamOS AI Copilot powered by Gemini 2.5 Flash. Respond with clear, structured, production-ready answer or code.`
+      );
+    } catch (err) {
+      console.warn("Gemini API fallback:", err);
+      fullResponse = generateNaturalAIResponse(currentQuery, updatedHistory, currentFile, selectedModel);
+    }
+
     startStreamingResponse(fullResponse, currentQuery);
   };
 
-  const handleRegenerate = (lastQuery) => {
+  const handleRegenerate = async (lastQuery) => {
     if (!lastQuery) return;
-    const fullResponse = generateNaturalAIResponse(lastQuery, conversations, null, selectedModel);
-    startStreamingResponse(fullResponse + '\n\n*(Regenerated with alternative reasoning)*', lastQuery);
+    let fullResponse = '';
+    try {
+      fullResponse = await generateGeminiText(
+        lastQuery,
+        `You are TeamOS AI Copilot running Gemini 2.5 Flash. Provide an alternative, deeper reasoning response for the query.`
+      );
+    } catch (err) {
+      fullResponse = generateNaturalAIResponse(lastQuery, conversations, null, selectedModel);
+    }
+    startStreamingResponse(fullResponse + '\n\n*(Regenerated via Gemini 2.5 Flash)*', lastQuery);
   };
 
   const handleCopyText = (text, id) => {

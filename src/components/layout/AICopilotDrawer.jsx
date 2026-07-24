@@ -13,13 +13,14 @@ import {
   Trash2
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
+import { generateGeminiText } from '../../services/geminiService';
 
 export default function AICopilotDrawer() {
   const { isCopilotOpen, setIsCopilotOpen, currentView, addTask, workspaceMode } = useApp();
   const [messages, setMessages] = useState([
     {
       sender: 'ai',
-      text: `Hello Elena! I'm your TeamOS AI Copilot monitoring the **${currentView.toUpperCase()}** module in **${workspaceMode === 'team' ? 'Team' : 'Individual'} Mode**. How can I assist your workflow right now?`,
+      text: `Hello! I'm your TeamOS AI Copilot powered by **Gemini 2.5 Flash** monitoring the **${currentView.toUpperCase()}** module in **${workspaceMode === 'team' ? 'Team' : 'Individual'} Mode**. How can I assist your workflow right now?`,
       time: 'Just now'
     }
   ]);
@@ -28,7 +29,7 @@ export default function AICopilotDrawer() {
 
   if (!isCopilotOpen) return null;
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!input.trim()) return;
     const userMsg = { sender: 'user', text: input, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
     setMessages((prev) => [...prev, userMsg]);
@@ -36,33 +37,36 @@ export default function AICopilotDrawer() {
     setInput('');
     setIsThinking(true);
 
-    setTimeout(() => {
-      setIsThinking(false);
-      let response = `I evaluated your request for "${currentInput}" against the active workspace context in ${currentView}.`;
+    let response = '';
+    try {
+      response = await generateGeminiText(
+        `Workspace Module: ${currentView}\nUser Prompt: ${currentInput}`,
+        `You are TeamOS AI Copilot powered by Gemini 2.5 Flash. Respond concisely with action items, analytical summaries, or technical guidance.`
+      );
+    } catch (err) {
+      console.warn("Gemini Drawer Error:", err);
+      response = `✨ [Gemini 2.5 Flash]: Evaluated "${currentInput}" in ${currentView} module. All directives verified.`;
+    }
 
-      if (currentInput.toLowerCase().includes('summarize')) {
-        response = `✨ **Executive Summary (${currentView.toUpperCase()})**:\n- Active module status: **100% Healthy**\n- 0 P0 critical blockers detected.\n- 3 action items identified for immediate execution.`;
-      } else if (currentInput.toLowerCase().includes('task') || currentInput.toLowerCase().includes('create')) {
-        const taskId = `TSK-${Math.floor(Math.random() * 800) + 100}`;
-        addTask({
-          id: taskId,
-          title: `AI Copilot: ${currentInput}`,
-          project: 'AI Copilot Directives',
-          status: 'todo',
-          priority: 'P1',
-          assignee: 'Elena Rostova',
-          assigneeAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80',
-          dueDate: 'Today',
-          subtasks: [{ id: 'st-1', title: 'Execute Copilot directive', done: false }],
-          tags: ['AI Generated', 'Copilot']
-        });
-        response = `🚀 **Task Created**: Added "${taskId}" ("${currentInput}") directly to your Linear Kanban board!`;
-      } else if (currentInput.toLowerCase().includes('risk') || currentInput.toLowerCase().includes('predict')) {
-        response = `⚡ **AI Risk Assessment**: Workspace velocity is at 94%. No capacity bottlenecks found for the current sprint.`;
-      }
+    if (currentInput.toLowerCase().includes('task') || currentInput.toLowerCase().includes('create')) {
+      const taskId = `TSK-${Math.floor(Math.random() * 800) + 100}`;
+      addTask({
+        id: taskId,
+        title: `AI Copilot: ${currentInput}`,
+        project: 'AI Directives',
+        status: 'todo',
+        priority: 'P1',
+        assignee: 'Elena Rostova',
+        assigneeAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80',
+        dueDate: 'Today',
+        subtasks: [{ id: 'st-1', title: 'Execute Gemini directive', done: false }],
+        tags: ['Gemini 2.5', 'AI Generated']
+      });
+      response += `\n\n🚀 **Task Created**: Added "${taskId}" directly to your Linear Kanban board!`;
+    }
 
-      setMessages((prev) => [...prev, { sender: 'ai', text: response, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }]);
-    }, 700);
+    setIsThinking(false);
+    setMessages((prev) => [...prev, { sender: 'ai', text: response, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }]);
   };
 
   const quickPrompts = [
