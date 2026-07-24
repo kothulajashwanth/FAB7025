@@ -163,17 +163,19 @@ export default function LandingPage() {
           width: '650px', 
           height: '650px', 
           background: mix.bgGlow1, 
+          opacity: theme === 'light' ? 0.05 : 0.45,
           transition: 'all 0.8s ease'
         }} 
       />
       <div 
         className="ambient-blob" 
         style={{ 
-          top: '300px', 
+          top: '30%', 
           right: '-150px', 
           width: '700px', 
           height: '700px', 
           background: mix.bgGlow2, 
+          opacity: theme === 'light' ? 0.05 : 0.45,
           transition: 'all 0.8s ease'
         }} 
       />
@@ -333,11 +335,13 @@ export default function LandingPage() {
               color: 'var(--text-primary)'
             }}>
               The Operating System for{' '}
-              <span style={{
+              <span style={theme === 'light' ? {
+                color: '#4338ca',
+                fontWeight: 900
+              } : {
                 background: mix.heroGradient,
                 WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                color: mix.primary
+                WebkitTextFillColor: 'transparent'
               }}>
                 High-Velocity Teams.
               </span>
@@ -616,7 +620,11 @@ export default function LandingPage() {
               color: 'var(--text-primary)'
             }}>
               "We didn't just build another chat or video app. We built the{' '}
-              <span style={{ 
+              <span style={theme === 'light' ? {
+                color: '#4338ca',
+                fontWeight: 900,
+                textDecoration: 'underline decoration-wavy #6366f1'
+              } : { 
                 background: mix.heroGradient,
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
