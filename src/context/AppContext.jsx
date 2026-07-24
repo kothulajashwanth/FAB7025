@@ -95,8 +95,16 @@ export const initialNotifications = [
   { id: 3, type: 'meeting', title: 'Meeting Ready', message: 'Executive AI Strategy Sync starts in 5 minutes.', time: '1h ago', read: true, category: 'updates' }
 ];
 
+// Helper to detect initial user OS device theme preference
+const getSystemTheme = () => {
+  if (typeof window !== 'undefined' && window.matchMedia) {
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+  return 'dark';
+};
+
 export function AppProvider({ children }) {
-  const [theme, setTheme] = useState('dark');
+  const [theme, setTheme] = useState(getSystemTheme);
   const [currentView, setCurrentView] = useState('landing');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [pendingPaymentPlan, setPendingPaymentPlan] = useState(null);
@@ -169,6 +177,24 @@ export function AppProvider({ children }) {
     if (search.includes('view=meetings') || search.includes('room=') || hash.includes('meetings')) {
       console.log("🔗 Detected Direct Video Call Room Invite Link!");
       setPendingTargetView('meetings');
+    }
+  }, []);
+
+  // Listen for real-time user OS system theme changes (Light / Dark mode switch)
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) return;
+
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleSystemThemeChange = (e) => {
+      setTheme(e.matches ? 'dark' : 'light');
+    };
+
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', handleSystemThemeChange);
+      return () => mediaQuery.removeEventListener('change', handleSystemThemeChange);
+    } else if (mediaQuery.addListener) {
+      mediaQuery.addListener(handleSystemThemeChange);
+      return () => mediaQuery.removeListener(handleSystemThemeChange);
     }
   }, []);
 

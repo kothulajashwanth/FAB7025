@@ -105,6 +105,25 @@ const COLOR_MIXES = {
   }
 };
 
+const LIGHT_RICH_MIX = {
+  id: 'light-rich',
+  name: 'Rich Platinum Indigo',
+  primary: '#4f46e5',
+  secondary: '#7c3aed',
+  tertiary: '#0284c7',
+  gradient: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #0284c7 100%)',
+  heroGradient: 'linear-gradient(135deg, #4338ca 0%, #6366f1 50%, #0284c7 100%)',
+  badgeBg: 'rgba(79, 70, 229, 0.08)',
+  badgeText: '#4338ca',
+  badgeBorder: 'rgba(79, 70, 229, 0.25)',
+  bgGlow1: 'radial-gradient(circle, rgba(79, 70, 229, 0.14) 0%, rgba(2, 132, 199, 0.05) 100%)',
+  bgGlow2: 'radial-gradient(circle, rgba(124, 58, 237, 0.14) 0%, rgba(79, 70, 229, 0.05) 100%)',
+  cardBorder: 'rgba(79, 70, 229, 0.18)',
+  glowShadow: '0 20px 48px rgba(79, 70, 229, 0.16)',
+  btnGradient: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #0284c7 100%)',
+  dots: ['#4f46e5', '#7c3aed', '#0284c7']
+};
+
 export default function LandingPage() {
   const { setCurrentView, theme, toggleTheme, handlePlanCheckoutSelect, launchWorkspaceGate, isAuthenticated } = useApp();
   const [heroTab, setHeroTab] = useState('chat');
@@ -112,7 +131,7 @@ export default function LandingPage() {
   const [billingCycle, setBillingCycle] = useState('annual');
   const [activeMixKey, setActiveMixKey] = useState('aurora');
 
-  const mix = COLOR_MIXES[activeMixKey];
+  const mix = theme === 'light' ? LIGHT_RICH_MIX : COLOR_MIXES[activeMixKey];
 
   const perSeatPriceINR = billingCycle === 'annual' ? 1499 : 1799;
   const starterPriceINR = billingCycle === 'annual' ? 499 : 599;
